@@ -260,7 +260,7 @@ function startFlowerRain() {
 
 function createPetal(container) {
     const petal = document.createElement('div');
-    petal.className = 'petal';
+    petal.className = 'rose-petal';
 
     const size = Math.random() * 14 + 8;
     const leftPos = Math.random() * 100;
