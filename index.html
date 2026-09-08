@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promita Bhattacharyya & Kailash Shivansh Gupta's Wedding Invitation</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@200;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet/index.css">
+    <script src="javascript/index.js" defer></script>
+
+</head>
+
+<body>
+    <div id="petal-container"></div>
+
+    <audio id="bgMusic" loop>
+    </audio>
+
+    <button class="audio-control" id="audioControlBtn" onclick="toggleAudio(event)">
+        <svg id="speakerIcon" viewBox="0 0 24 24">
+            <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+        </svg>
+    </button>
+
+    <!-- 1. OPEN ENVELOPE SCREEN -->
+    <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+        <div class="envelope">
+            <div class="flap"></div>
+            <div class="letter-peek">
+                <p>You're Invited</p>
+                <p style="font-size: 16px; font-family: 'Montserrat'; letter-spacing:2px; margin-top:10px;">K & P</p>
+            </div>
+            <div class="click-text">Click to Open Envelope</div>
+        </div>
+    </div>
+
+
+    <!-- 2. MAIN INVITATION CONTENT -->
+    <div class="main-content" id="mainContent">
+
+        <!-- 5. SCRATCH TO REVEAL NAME -->
+        <div class="scratch-section">
+            <p class="tagline">Scratch to Reveal Name</p>
+            <div class="scratch-container" id="scratchContainer">
+                <div class="secret-content">
+                    <h1 class="names">Promita Bhattacharyya <br>&</br>Kailash Shivansh Gupta</h1>
+                    <p style="font-size: 18px; font-style: italic; color: #6c6359; margin-bottom: 10px;">Are getting
+                        married!</p>
+                </div>
+                <canvas id="scratch-canvas" width="320" height="150"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <p class="tagline">Save the Date</p>
+            <p class="tagline" style="color: var(--accent);">
+            <h1>February 11, 2027</h1>
+            </p>
+            <!--<p style="font-size: 16px; margin-top: 5px; color: #8a817c;">At half past four in the afternoon</p>-->
+            <div class="countdown-container">
+                <div class="time-box"><span class="count" id="days">00</span><span class="label">Days</span></div>
+                <div class="time-box"><span class="count" id="hours">00</span><span class="label">Hours</span></div>
+                <div class="time-box"><span class="count" id="mins">00</span><span class="label">Mins</span></div>
+                <div class="time-box"><span class="count" id="secs">00</span><span class="label">Secs</span></div>
+            </div>
+        </div>
+
+        <!-- 5. SCRATCH TO REVEAL VENUE -->
+        <div class="scratch-section">
+            <p class="tagline">Scratch to Reveal Venue Details</p>
+            <div class="scratch-container" id="scratchContainerVenue">
+                <div class="secret-content">
+                    <h3>Souhardho Banquet Hall</h3>
+                    <p>35, GT Rd, Konnagar, West Bengal 712235</p>
+                </div>
+                <canvas id="scratch-canvas-venue" width="320" height="150"></canvas>
+            </div>
+        </div>
+
+
+        <div style="padding-bottom: 20px;">
+            <p class="tagline" style="text-align: center;margin-bottom: 20px;">Schedule of Events</p>
+            <div class="schedule-wrapper" id="scheduleWrapper">
+
+                <div class="timeline-container" id="timelineContainer">
+                    <div class="line-backbone"></div>
+
+
+                    <div class="scroll-marker" id="scrollMarker">🌹</div>
+
+         
+                    <div class="time-row">
+                        <div class="node"></div>
+                        <div class="time-col">10:00 AM</div>
+                        <div class="event-col">Guest Arrival</div>
+                    </div>
+
+           
+                    <div class="time-row">
+                        <div class="node"></div>
+                        <div class="time-col">12:00 PM</div>
+                        <div class="event-col">Welcome Ceremony</div>
+                    </div>
+
+               
+                    <div class="time-row">
+                        <div class="node"></div>
+                        <div class="time-col">02:00 PM</div>
+                        <div class="event-col">Mocktail Hour</div>
+                    </div>
+
+                 
+                    <div class="time-row">
+                        <div class="node"></div>
+                        <div class="time-col">04:00 PM</div>
+                        <div class="event-col">Grand Dinner</div>
+                    </div>
+
+                  
+                    <div class="time-row">
+                        <div class="node"></div>
+                        <div class="time-col">06:00 PM</div>
+                        <div class="event-col">Dance & Celebration</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 4. HORIZONTAL SCROLLING PIC GALLERY (WITH DESKTOP UPGRADES) -->
+        <p class="gallery-title">Our Moments</p>
+        <div class="gallery-container-outer">
+            <button class="nav-arrow arrow-left" onclick="scrollGallery(-300)">&#10094;</button>
+            <div class="scrolling-wrapper" id="galleryWrapper">
+                <!-- Fallback loading messages. JavaScript populates random Google Drive photos here -->
+                <div class="img-card">
+                    <p style="font-size:12px; color:#8a817c;">Loading memory...</p>
+                </div>
+                <div class="img-card">
+                    <p style="font-size:12px; color:#8a817c;">Loading memory...</p>
+                </div>
+                <div class="img-card">
+                    <p style="font-size:12px; color:#8a817c;">Loading memory...</p>
+                </div>
+            </div>
+            <button class="nav-arrow arrow-right" onclick="scrollGallery(300)">&#10095;</button>
+        </div>
+
+
+
+        <!-- 6. GOOGLE MAP LOCATION -->
+        <div class="card" style="padding: 30px 20px;">
+            <p class="tagline">Find Your Way</p>
+            <div class="map-container">
+                <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3139.141517789426!2d-122.4204123!3d38.3456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085061b46328b9b%3A0x6b1cfb6a3bcf54b3!2sNapa%20Valley!5e0!3m2!1sen!2sus!4v1710000000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>-->
+               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.5909988259186!2d88.3578095!3d22.706264699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89c81f7dd7423%3A0x82c8a25ea6fb91c6!2sSouhardho%20Banquet%20Hall!5e0!3m2!1sen!2sin!4v1788856844262!5m2!1sen!2sin" 
+                    width="600" height="450" style="border:0;" allowfullscreen="" 
+                    loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
