@@ -6,12 +6,19 @@ const DRIVE_BACKGROUND_IMAGE_ID = "1CQWBR1UT8FdqjuOBiGb5_qYq815WEowu";
 const DRIVE_FOLDER_ID_FOR_CLIENT = "1V-jHThQiQln-XA5UX4dnDd0Zgyka137r";
 const MAX_GALLERY_IMAGES = 5;
 
+// Static backup images in case Drive API limits/network errors occur
+const FALLBACK_IMAGES = [
+    "https://picsum.photos/600/800?random=11",
+    "https://picsum.photos/600/800?random=12",
+    "https://picsum.photos/600/800?random=13",
+    "https://picsum.photos/600/800?random=14"
+];
+
 // Global DOM references and status state
 let audio = null;
 let audioBtn = null;
 let speakerIcon = null;
 let audioLoaded = false;
-let audioLoadPromise = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     // Bind DOM elements globally once page loads
@@ -34,35 +41,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const endTop = timeline.clientHeight - 10;
             const newTop = startTop + (scrollPercent * (endTop - startTop));
             marker.style.top = `${newTop}px`;
-        });
+        }, { passive: true });
     }
 
-    // Load audio stream safely and save promise reference
-    audioLoadPromise = loadDriveAudio();
+    // Load audio stream safely for cross-platform playback
+    loadDriveAudio();
 });
 
-async function loadDriveAudio() {
+function loadDriveAudio() {
     if (!audio || !DRIVE_AUDIO_FILE_ID) return;
 
-    // Direct streaming edge endpoint (No auth/cookies required)
-    const fallbackAudioUrl = `https://lh3.googleusercontent.com/d/${DRIVE_AUDIO_FILE_ID}`;
-
-    try {
-        const audioApiUrl = `https://www.googleapis.com/drive/v3/files/${DRIVE_AUDIO_FILE_ID}?alt=media&key=${DRIVE_API_KEY}`;
-        const response = await fetch(audioApiUrl);
-
-        if (!response.ok) {
-            throw new Error(`API responded with status: ${response.status}`);
-        }
-
-        const blob = await response.blob();
-        audio.src = URL.createObjectURL(blob);
-        audioLoaded = true;
-    } catch (err) {
-        console.warn("Drive API media fetch blocked (403/CORS). Switching to public edge stream fallback:", err);
-        audio.src = fallbackAudioUrl;
-        audioLoaded = true;
-    }
+    // Use direct usercontent edge endpoint (No Google login session required)
+    const edgeAudioUrl = `https://lh3.googleusercontent.com/d/${DRIVE_AUDIO_FILE_ID}`;
+    
+    audio.src = edgeAudioUrl;
+    audio.preload = "auto";
+    audioLoaded = true;
 }
 
 async function openEnvelope() {
@@ -77,13 +71,12 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
-    // Await audio loading completion before playback
+    // Play audio safely within the user interaction gesture (Required on iOS Safari / Mobile Android)
     if (audio) {
         try {
-            if (audioLoadPromise) await audioLoadPromise;
             await audio.play();
         } catch (err) {
-            console.warn("Autoplay interrupted or restricted:", err);
+            console.warn("Autoplay restricted or user gesture required:", err);
         }
     }
 
@@ -116,57 +109,47 @@ async function loadGoogleDriveImages() {
     const wrapper = document.getElementById('galleryWrapper');
     const mainContent = document.getElementById('mainContent');
 
-    if (DRIVE_API_KEY === "YOUR_GOOGLE_API_KEY_HERE" || DRIVE_FOLDER_ID === "YOUR_SHARED_FOLDER_ID_HERE") {
-        wrapper.innerHTML = `
-            <div class="img-card"><img src="https://picsum.photos/600/800?random=11"></div>
-            <div class="img-card"><img src="https://picsum.photos/600/800?random=12"></div>
-            <div class="img-card"><img src="https://picsum.photos/600/800?random=13"></div>
-            <div class="img-card"><img src="https://picsum.photos/600/800?random=14"></div>
-        `;
-        mainContent.style.backgroundImage = "url('https://picsum.photos/1200/1600?random=100')";
-        return;
+    // Default background image setup
+    if (DRIVE_BACKGROUND_IMAGE_ID) {
+        mainContent.style.backgroundImage = `url('https://lh3.googleusercontent.com/d/${DRIVE_BACKGROUND_IMAGE_ID}')`;
     }
 
-    const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name)`;
+    const url1 = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID_FOR_CLIENT}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name)`;
 
     try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response1 = await fetch(url1);
+        
+        if (!response1.ok) throw new Error(`HTTP Error: ${response1.status}`);
 
-        if (data.files && data.files.length > 0) {
+        const data1 = await response1.json();
 
-            let defaultBckgId = DRIVE_BACKGROUND_IMAGE_ID;
-            // Removed /u/0/ session reference
-            const bgImgUrl = `https://lh3.googleusercontent.com/d/${defaultBckgId}`;
-            mainContent.style.backgroundImage = `url('${bgImgUrl}')`;
+        if (data1.files && data1.files.length > 0) {
+            let shuffledFiles = data1.files.sort(() => 0.5 - Math.random());
+            let selectedFiles = shuffledFiles.slice(0, MAX_GALLERY_IMAGES);
+            wrapper.innerHTML = "";
 
-            const url1 = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID_FOR_CLIENT}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name)`;
-            const response1 = await fetch(url1);
-            const data1 = await response1.json();
-
-            if (data1.files && data1.files.length > 0) {
-                let shuffledFiles = data1.files.sort(() => 0.5 - Math.random());
-                let selectedFiles = shuffledFiles.slice(0, MAX_GALLERY_IMAGES);
-                wrapper.innerHTML = "";
-
-                selectedFiles.forEach(file => {
-                    if (file.id !== defaultBckgId) {
-                        // Public direct thumbnail edge endpoint
-                        const imgUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
-                        const card = document.createElement('div');
-                        card.className = 'img-card';
-                        card.innerHTML = `<img src="${imgUrl}" alt="Wedding Memory Preview" onerror="this.parentElement.style.display='none'">`;
-                        wrapper.appendChild(card);
-                    }
-                });
-            }
+            selectedFiles.forEach(file => {
+                if (file.id !== DRIVE_BACKGROUND_IMAGE_ID) {
+                    const imgUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
+                    const card = document.createElement('div');
+                    card.className = 'img-card';
+                    card.innerHTML = `<img src="${imgUrl}" alt="Wedding Memory" onerror="this.src='${FALLBACK_IMAGES[0]}'">`;
+                    wrapper.appendChild(card);
+                }
+            });
         } else {
-            throw new Error("No files found or private access error.");
+            throw new Error("No files found in folder.");
         }
     } catch (error) {
-        console.error("Error communicating with Drive endpoint API:", error);
-        wrapper.innerHTML = `<p style="grid-column:1/-1; text-align:center; font-size:14px; width:100%;">Unable to stream images dynamically. Ensure folder permissions allow public discovery.</p>`;
+        console.warn("Drive API image fetch failed, rendering fallbacks:", error);
+        renderFallbackGallery(wrapper);
     }
+}
+
+function renderFallbackGallery(wrapper) {
+    wrapper.innerHTML = FALLBACK_IMAGES.map(src => 
+        `<div class="img-card"><img src="${src}" alt="Fallback Preview"></div>`
+    ).join('');
 }
 
 function startFlowerRain() {
@@ -209,23 +192,38 @@ function setupScratchCanvas(canvasId) {
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
 
+    // Handle High-DPI (Retina) screens on mobile devices
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
     ctx.fillStyle = "#bc9c6c";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, rect.width, rect.height);
     ctx.font = "12px Montserrat";
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
-    ctx.fillText("SCRATCH WITH MOUSE OR FINGER", canvas.width / 2, canvas.height / 2 + 5);
+    ctx.fillText("SCRATCH WITH MOUSE OR FINGER", rect.width / 2, rect.height / 2 + 5);
 
     function scratch(e) {
         if (!isDrawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        
+
+        const currentRect = canvas.getBoundingClientRect();
+        let clientX, clientY;
+
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+
         if (clientX === undefined || clientY === undefined) return;
 
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const x = clientX - currentRect.left;
+        const y = clientY - currentRect.top;
 
         ctx.globalCompositeOperation = "destination-out";
         ctx.beginPath();
@@ -233,14 +231,23 @@ function setupScratchCanvas(canvasId) {
         ctx.fill();
     }
 
+    // Desktop Mouse Events
     canvas.addEventListener("mousedown", () => isDrawing = true);
     canvas.addEventListener("mouseup", () => isDrawing = false);
+    canvas.addEventListener("mouseleave", () => isDrawing = false);
     canvas.addEventListener("mousemove", scratch);
 
-    canvas.addEventListener("touchstart", () => isDrawing = true, { passive: true });
+    // Mobile Touch Events
+    canvas.addEventListener("touchstart", (e) => {
+        isDrawing = true;
+        scratch(e);
+    }, { passive: true });
+
     canvas.addEventListener("touchend", () => isDrawing = false, { passive: true });
     canvas.addEventListener("touchmove", (e) => {
-        scratch(e);
+        if (isDrawing) {
+            scratch(e);
+        }
     }, { passive: true });
 }
 

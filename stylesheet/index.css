@@ -561,3 +561,7 @@ h1.names {
     font-size: 16px;
     text-align: left;
 }
+
+#scratch-canvas, #scratch-canvas-venue {
+    touch-action: none;
+}
