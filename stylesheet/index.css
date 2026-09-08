@@ -62,17 +62,17 @@ body {
     position: absolute;
     /* Rich Rose Palette Gradient */
     background: linear-gradient(135deg, #e0325c 0%, #b81d43 60%, #850e2b 100%);
-    
+
     /* Asymmetrical teardrop curve characteristic of a rose petal */
     border-radius: 50% 0% 50% 50%;
-    
+
     opacity: 0.88;
     transform-origin: center center;
     animation: roseFall 9s linear infinite;
-    
+
     /* Adds depth and subtle realistic curl highlight */
-    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.25), 
-                inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.25),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 4px 8px rgba(133, 14, 43, 0.15));
 }
 
@@ -83,18 +83,23 @@ body {
         transform: translateX(0) rotate(0deg) rotateY(0deg);
         opacity: 0;
     }
+
     10% {
         opacity: 0.9;
     }
+
     25% {
         transform: translateX(25px) rotate(45deg) rotateY(180deg);
     }
+
     50% {
         transform: translateX(-20px) rotate(110deg) rotateX(120deg);
     }
+
     75% {
         transform: translateX(30px) rotate(220deg) rotateY(240deg);
     }
+
     100% {
         top: 105%;
         transform: translateX(-10px) rotate(360deg) rotateX(360deg);
@@ -274,7 +279,7 @@ h1.names {
     font-family: 'Alex Brush', cursive;
     font-size: 25px;
     margin: 10px 0;
-    color: maroon;
+    color: goldenrod;
 }
 
 .tagline {
@@ -282,7 +287,16 @@ h1.names {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 4px;
-    color: #8a817c;
+    color: goldenrod;
+}
+
+.tagline-date {
+    font-family: 'Roboto Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: goldenrod;
 }
 
 /* 3. COUNTDOWN TIMER */
@@ -419,11 +433,13 @@ h1.names {
 
 /* 4.1. Swipe hint for mobile users */
 .swipe-hint {
-    display: none; /* Hidden by default on desktop */
+    display: none;
+    /* Hidden by default on desktop */
     text-align: center;
     font-family: 'Montserrat', sans-serif;
     font-size: 12px;
-    color: #850e2b; /* Rose/Crimson theme color */
+    color: #850e2b;
+    /* Rose/Crimson theme color */
     background: rgba(224, 50, 92, 0.08);
     padding: 6px 14px;
     border-radius: 20px;
@@ -435,15 +451,26 @@ h1.names {
 
 /* Subtle animation to draw attention */
 @keyframes pulseSwipe {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.03); }
+
+    0%,
+    100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.03);
+    }
 }
 
 /* Display swipe hint on touch screens and mobile viewports */
-@media (max-width: 768px), (pointer: coarse) {
+@media (max-width: 768px),
+(pointer: coarse) {
     .swipe-hint {
         display: block;
     }
+
     /* Hide desktop arrows on mobile to keep layout clean */
     .nav-arrow {
         display: none !important;
@@ -473,7 +500,7 @@ h1.names {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
+    background: maroon;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -487,11 +514,12 @@ h1.names {
     font-size: 18px;
     letter-spacing: 1px;
     margin-bottom: 5px;
+    color: goldenrod;
 }
 
 .secret-content p {
     font-size: 14px;
-    color: #8a817c;
+    color: goldenrod;
     font-style: italic;
 }
 
@@ -691,7 +719,7 @@ h1.names {
     width: 38px;
     height: 38px;
     object-fit: contain;
-   
+
 }
 
 /* Hide seal gracefully when envelope opens */

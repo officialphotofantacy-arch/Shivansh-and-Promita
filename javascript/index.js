@@ -289,8 +289,8 @@ function createRosePetal(container) {
 
     const size = Math.random() * 12 + 10; // Slightly larger for rose petals
     const leftPos = Math.random() * 100;
-    const delay = Math.random() * 8;
-    const duration = Math.random() * 5 + 6;
+    const delay = Math.random() * 3;
+    const duration = Math.random() * 2.5 + 2.5; // Faster fall for rose petals
 
     petal.style.width = `${size}px`;
     petal.style.height = `${size * 1.3}px`;
