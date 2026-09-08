@@ -434,6 +434,30 @@ h1.names {
     z-index: 10;
 }
 
+.scratch-container {
+    position: relative;
+    width: 320px;
+    height: 150px;
+    margin: 20px auto;
+    user-select: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* Explicit CSS bounds for scratch canvases */
+#scratch-canvas,
+#scratch-canvas-venue {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: pointer;
+    z-index: 10;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 /* 6. GOOGLE MAPS EMBED */
 .map-container {
     margin-top: 30px;

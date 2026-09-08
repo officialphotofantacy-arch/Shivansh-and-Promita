@@ -51,10 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
 function loadDriveAudio() {
     if (!audio || !DRIVE_AUDIO_FILE_ID) return;
 
-    // Use direct usercontent edge endpoint (No Google login session required)
-    const edgeAudioUrl = `https://lh3.googleusercontent.com/d/${DRIVE_AUDIO_FILE_ID}`;
+    // Stream directly via drive API using your existing key to bypass redirect pages
+    const streamUrl = `https://www.googleapis.com/drive/v3/files/${DRIVE_AUDIO_FILE_ID}?alt=media&key=${DRIVE_API_KEY}`;
     
-    audio.src = edgeAudioUrl;
+    audio.src = streamUrl;
     audio.preload = "auto";
     audioLoaded = true;
 }
@@ -71,19 +71,28 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
-    // Play audio safely within the user interaction gesture (Required on iOS Safari / Mobile Android)
+    // Prepare and play audio directly within user gesture
     if (audio) {
         try {
-            await audio.play();
+            audio.load(); // Required for iOS Safari to register source
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                await playPromise;
+            }
         } catch (err) {
-            console.warn("Autoplay restricted or user gesture required:", err);
+            console.warn("Autoplay gesture issue:", err);
         }
     }
 
-    initScratchCard();
-    initScratchCardVenue();
+  // Delay initialization slightly so getBoundingClientRect() gets non-zero dimensions
+    setTimeout(() => {
+        initScratchCard();
+        initScratchCardVenue();
+    }, 100);
+
     loadGoogleDriveImages();
 }
+
 
 function toggleAudio(event) {
     if (event) event.stopPropagation();
@@ -114,7 +123,8 @@ async function loadGoogleDriveImages() {
         mainContent.style.backgroundImage = `url('https://lh3.googleusercontent.com/d/${DRIVE_BACKGROUND_IMAGE_ID}')`;
     }
 
-    const url1 = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID_FOR_CLIENT}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name)`;
+    const query = encodeURIComponent(`'${DRIVE_FOLDER_ID_FOR_CLIENT}' in parents and mimeType contains 'image/'`);
+    const url1 = `https://www.googleapis.com/drive/v3/files?q=${query}&key=${DRIVE_API_KEY}&fields=files(id,name)`;
 
     try {
         const response1 = await fetch(url1);
@@ -192,63 +202,69 @@ function setupScratchCanvas(canvasId) {
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
 
-    // Handle High-DPI (Retina) screens on mobile devices
-    const dpr = window.devicePixelRatio || 1;
+    // Fallback to container dimensions if element hasn't laid out yet
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    const width = rect.width || 320;
+    const height = rect.height || 150;
+    const dpr = window.devicePixelRatio || 1;
+
+    // Set high-DPI canvas render resolution
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+
+    // Scale drawing context to device pixel ratio
     ctx.scale(dpr, dpr);
 
+    // Render golden cover overlay
     ctx.fillStyle = "#bc9c6c";
-    ctx.fillRect(0, 0, rect.width, rect.height);
-    ctx.font = "12px Montserrat";
+    ctx.fillRect(0, 0, width, height);
+    ctx.font = "600 12px Montserrat, sans-serif";
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
-    ctx.fillText("SCRATCH WITH MOUSE OR FINGER", rect.width / 2, rect.height / 2 + 5);
+    ctx.textBaseline = "middle";
+    ctx.fillText("SCRATCH WITH MOUSE OR FINGER", width / 2, height / 2);
 
-    function scratch(e) {
-        if (!isDrawing) return;
-
+    function getTouchPos(e) {
         const currentRect = canvas.getBoundingClientRect();
-        let clientX, clientY;
+        let clientX = e.clientX;
+        let clientY = e.clientY;
 
         if (e.touches && e.touches.length > 0) {
             clientX = e.touches[0].clientX;
             clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
         }
 
-        if (clientX === undefined || clientY === undefined) return;
+        return {
+            x: clientX - currentRect.left,
+            y: clientY - currentRect.top
+        };
+    }
 
-        const x = clientX - currentRect.left;
-        const y = clientY - currentRect.top;
+    function scratch(e) {
+        if (!isDrawing) return;
+        if (e.cancelable) e.preventDefault(); // Prevents mobile screen scroll while scratching
+
+        const pos = getTouchPos(e);
 
         ctx.globalCompositeOperation = "destination-out";
         ctx.beginPath();
-        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // Desktop Mouse Events
-    canvas.addEventListener("mousedown", () => isDrawing = true);
-    canvas.addEventListener("mouseup", () => isDrawing = false);
-    canvas.addEventListener("mouseleave", () => isDrawing = false);
+    // Mouse events
+    canvas.addEventListener("mousedown", (e) => { isDrawing = true; scratch(e); });
     canvas.addEventListener("mousemove", scratch);
+    window.addEventListener("mouseup", () => isDrawing = false);
 
-    // Mobile Touch Events
+    // Touch events
     canvas.addEventListener("touchstart", (e) => {
         isDrawing = true;
         scratch(e);
-    }, { passive: true });
+    }, { passive: false });
 
-    canvas.addEventListener("touchend", () => isDrawing = false, { passive: true });
-    canvas.addEventListener("touchmove", (e) => {
-        if (isDrawing) {
-            scratch(e);
-        }
-    }, { passive: true });
+    canvas.addEventListener("touchmove", scratch, { passive: false });
+    window.addEventListener("touchend", () => isDrawing = false);
 }
 
 function initScratchCard() {

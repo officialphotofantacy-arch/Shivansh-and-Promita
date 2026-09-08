@@ -20,7 +20,9 @@
 <body>
     <div id="petal-container"></div>
 
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop playsinline preload="auto">
+        <source src="" type="audio/mpeg">
+        Your browser does not support the audio element.
     </audio>
 
     <button class="audio-control" id="audioControlBtn" onclick="toggleAudio(event)">
@@ -80,12 +82,14 @@
                 <div class="secret-content">
                     <h3>Souhardho Banquet Hall</h3>
                     <p>35, GT Rd, Konnagar, West Bengal 712235</p>
+                    <p>07:00 PM Onwards</p>
                 </div>
                 <canvas id="scratch-canvas-venue" width="320" height="150"></canvas>
             </div>
         </div>
 
-
+        <!--- Event Schedule Section -->
+        <!--
         <div style="padding-bottom: 20px;">
             <p class="tagline" style="text-align: center;margin-bottom: 20px;">Schedule of Events</p>
             <div class="schedule-wrapper" id="scheduleWrapper">
@@ -96,35 +100,35 @@
 
                     <div class="scroll-marker" id="scrollMarker">🌹</div>
 
-         
+
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">10:00 AM</div>
                         <div class="event-col">Guest Arrival</div>
                     </div>
 
-           
+
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">12:00 PM</div>
                         <div class="event-col">Welcome Ceremony</div>
                     </div>
 
-               
+
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">02:00 PM</div>
                         <div class="event-col">Mocktail Hour</div>
                     </div>
 
-                 
+
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">04:00 PM</div>
                         <div class="event-col">Grand Dinner</div>
                     </div>
 
-                  
+
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">06:00 PM</div>
@@ -133,7 +137,7 @@
                 </div>
             </div>
         </div>
-
+->
 
         <!-- 4. HORIZONTAL SCROLLING PIC GALLERY (WITH DESKTOP UPGRADES) -->
         <p class="gallery-title">Our Moments</p>
@@ -161,9 +165,10 @@
             <p class="tagline">Find Your Way</p>
             <div class="map-container">
                 <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3139.141517789426!2d-122.4204123!3d38.3456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085061b46328b9b%3A0x6b1cfb6a3bcf54b3!2sNapa%20Valley!5e0!3m2!1sen!2sus!4v1710000000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>-->
-               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.5909988259186!2d88.3578095!3d22.706264699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89c81f7dd7423%3A0x82c8a25ea6fb91c6!2sSouhardho%20Banquet%20Hall!5e0!3m2!1sen!2sin!4v1788856844262!5m2!1sen!2sin" 
-                    width="600" height="450" style="border:0;" allowfullscreen="" 
-                    loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.5909988259186!2d88.3578095!3d22.706264699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89c81f7dd7423%3A0x82c8a25ea6fb91c6!2sSouhardho%20Banquet%20Hall!5e0!3m2!1sen!2sin!4v1788856844262!5m2!1sen!2sin"
+                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
             </div>
         </div>
 
