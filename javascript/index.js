@@ -38,14 +38,14 @@ function onYouTubeIframeAPIReady() {
         height: '0',
         width: '0',
         videoId: YOUTUBE_VIDEO_ID,
+        host: 'https://www.youtube.com', // Explicitly set host target domain
         playerVars: {
             'autoplay': 0,
             'controls': 0,
             'loop': 1,
             'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
             'enablejsapi': 1,
-            'playsinline': 1,
-            'origin': currentOrigin
+            'playsinline': 1
         },
         events: {
             'onReady': onPlayerReady,
