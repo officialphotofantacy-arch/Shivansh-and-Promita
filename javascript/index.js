@@ -332,7 +332,7 @@ function setupScratchCanvas(canvasId) {
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("SCRATCH WITH MOUSE OR FINGER", width / 2, height / 2);
+    ctx.fillText("SCRATCH HERE", width / 2, height / 2);
 
     function getTouchPos(e) {
         const currentRect = canvas.getBoundingClientRect();
