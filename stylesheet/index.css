@@ -290,13 +290,22 @@ h1.names {
     color: goldenrod;
 }
 
-.tagline-date {
-    font-family: 'Roboto Mono', monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    color: goldenrod;
+.date-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 5px 0;
+    letter-spacing: 1px;
+    align-items: center;
+}
+
+.time-subtext {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: 'Montserrat', sans-serif;
+    align-items: center;
 }
 
 /* 3. COUNTDOWN TIMER */
