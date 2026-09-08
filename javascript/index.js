@@ -4,6 +4,7 @@ const DRIVE_AUDIO_FILE_ID = "162AjHeQVycd4JWIJ7BwsPwFL6-qyS779";
 const DRIVE_FOLDER_ID = "1D4vjKXEnyAEru0HmuBAfbFAuMHrnft44";
 const DRIVE_BACKGROUND_IMAGE_ID = "1CQWBR1UT8FdqjuOBiGb5_qYq815WEowu";
 const DRIVE_FOLDER_ID_FOR_CLIENT = "1V-jHThQiQln-XA5UX4dnDd0Zgyka137r";
+const YOUTUBE_VIDEO_ID = "LazmC1gLa_0"; // e.g., '5qap5aO4i9A' (the string after v=)
 const MAX_GALLERY_IMAGES = 5;
 
 // Static backup images in case Drive API limits/network errors occur
@@ -19,6 +20,8 @@ let audio = null;
 let audioBtn = null;
 let speakerIcon = null;
 let audioLoaded = false;
+let player;
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // Bind DOM elements globally once page loads
@@ -53,11 +56,55 @@ function loadDriveAudio() {
 
     // Stream directly via drive API using your existing key to bypass redirect pages
     const streamUrl = `https://www.googleapis.com/drive/v3/files/${DRIVE_AUDIO_FILE_ID}?alt=media&key=${DRIVE_API_KEY}`;
-    
+
     audio.src = streamUrl;
     audio.preload = "auto";
     audioLoaded = true;
 }
+
+/*
+// 1. Load YouTube IFrame API script dynamically
+(function loadYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+})();
+
+// 2. Automatically triggered when YouTube API is ready
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+        height: '0',
+        width: '0',
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'loop': 1,
+            'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
+            'enablejsapi': 1,               // Enables postMessage controls
+            'origin': window.location.origin // Sends current host origin
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    console.log("YouTube audio player ready.");
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        updateSpeakerIcon(true);
+    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+        isPlaying = false;
+        updateSpeakerIcon(false);
+    }
+}*/
 
 async function openEnvelope() {
     document.getElementById('envelopeWrapper').classList.add('opened');
@@ -71,6 +118,7 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
+    
     // Prepare and play audio directly within user gesture
     if (audio) {
         try {
@@ -84,7 +132,13 @@ async function openEnvelope() {
         }
     }
 
-  // Delay initialization slightly so getBoundingClientRect() gets non-zero dimensions
+    /*
+    // Play YouTube Audio on user gesture
+    if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+    }*/
+
+    // Delay initialization slightly so getBoundingClientRect() gets non-zero dimensions
     setTimeout(() => {
         initScratchCard();
         initScratchCardVenue();
@@ -110,6 +164,31 @@ function toggleAudio(event) {
     }
 }
 
+// 4. Mute / Unmute audio button handler
+function toggleAudioYoutube(e) {
+    if (!player) return;
+    
+    if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+    } else {
+        player.playVideo();
+    }
+}
+
+// Helper to update speaker icon SVG paths
+function updateSpeakerIcon(playing) {
+    if (!speakerIcon) speakerIcon = document.getElementById('speakerIcon');
+    if (!speakerIcon) return;
+
+    if (playing) {
+        // Speaker ON path
+        speakerIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
+    } else {
+        // Speaker OFF / MUTED path
+        speakerIcon.innerHTML = `<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`;
+    }
+}
+
 function scrollGallery(amount) {
     document.getElementById('galleryWrapper').scrollBy({ left: amount, behavior: 'smooth' });
 }
@@ -128,7 +207,7 @@ async function loadGoogleDriveImages() {
 
     try {
         const response1 = await fetch(url1);
-        
+
         if (!response1.ok) throw new Error(`HTTP Error: ${response1.status}`);
 
         const data1 = await response1.json();
@@ -157,7 +236,7 @@ async function loadGoogleDriveImages() {
 }
 
 function renderFallbackGallery(wrapper) {
-    wrapper.innerHTML = FALLBACK_IMAGES.map(src => 
+    wrapper.innerHTML = FALLBACK_IMAGES.map(src =>
         `<div class="img-card"><img src="${src}" alt="Fallback Preview"></div>`
     ).join('');
 }
@@ -276,7 +355,7 @@ function initScratchCardVenue() {
 }
 
 // --- COUNTDOWN LOGIC ---
-const targetDate = new Date("Feb 11, 2027 16:30:00").getTime();
+const targetDate = new Date("Feb 11, 2027 19:00:00").getTime();
 setInterval(function () {
     const now = new Date().getTime();
     const diff = targetDate - now;

@@ -437,7 +437,7 @@ h1.names {
 .scratch-container {
     position: relative;
     width: 320px;
-    height: 150px;
+    height: 180px;
     margin: 20px auto;
     user-select: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
@@ -586,6 +586,39 @@ h1.names {
     text-align: left;
 }
 
-#scratch-canvas, #scratch-canvas-venue {
+#scratch-canvas,
+#scratch-canvas-venue {
     touch-action: none;
+}
+
+/* WAX SEAL WITH GANESHA ICON */
+.wax-seal {
+    position: absolute;
+    top: 115px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #d4af37 0%, #a37c27 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    border: 2px solid #b8860b;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.wax-seal img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+   
+}
+
+/* Hide seal gracefully when envelope opens */
+.envelope:hover .wax-seal {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0.3;
 }

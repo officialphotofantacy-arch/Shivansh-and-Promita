@@ -20,10 +20,15 @@
 <body>
     <div id="petal-container"></div>
 
+
     <audio id="bgMusic" loop playsinline preload="auto">
         <source src="" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+
+
+    <!-- Hidden YouTube Background Player -->
+    <!---<div id="youtube-player" style="display: none;"></div> -->
 
     <button class="audio-control" id="audioControlBtn" onclick="toggleAudio(event)">
         <svg id="speakerIcon" viewBox="0 0 24 24">
@@ -36,6 +41,10 @@
     <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
         <div class="envelope">
             <div class="flap"></div>
+            <!-- GANESHA WAX SEAL ENVELOPE STAMP -->
+            <div class="wax-seal">
+                <img src="images/sri-ganesh.png" alt="Lord Ganesha Seal">
+            </div>
             <div class="letter-peek">
                 <p>You're Invited</p>
                 <p style="font-size: 16px; font-family: 'Montserrat'; letter-spacing:2px; margin-top:10px;">K & P</p>
@@ -53,11 +62,12 @@
             <p class="tagline">Scratch to Reveal Name</p>
             <div class="scratch-container" id="scratchContainer">
                 <div class="secret-content">
-                    <h1 class="names">Promita Bhattacharyya <br>&</br>Kailash Shivansh Gupta</h1>
-                    <p style="font-size: 18px; font-style: italic; color: #6c6359; margin-bottom: 10px;">Are getting
-                        married!</p>
+                    <p style="font-size: 18px; font-style: italic; color: #6c6359; margin-bottom: 10px;">Join us as we
+                        celebrate<br>
+                        the sacred union of</p>
+                    <h1 class="names">Promita Bhattacharyya <br> & </br>Kailash Shivansh Gupta</h1>
                 </div>
-                <canvas id="scratch-canvas" width="320" height="150"></canvas>
+                <canvas id="scratch-canvas" width="320" height="180"></canvas>
             </div>
         </div>
 
@@ -66,7 +76,7 @@
             <p class="tagline" style="color: var(--accent);">
             <h1>February 11, 2027</h1>
             </p>
-            <!--<p style="font-size: 16px; margin-top: 5px; color: #8a817c;">At half past four in the afternoon</p>-->
+            <p style="font-size: 16px; margin-top: 5px; color: #8a817c;">At 07:00 PM Onwards</p>
             <div class="countdown-container">
                 <div class="time-box"><span class="count" id="days">00</span><span class="label">Days</span></div>
                 <div class="time-box"><span class="count" id="hours">00</span><span class="label">Hours</span></div>
@@ -82,7 +92,6 @@
                 <div class="secret-content">
                     <h3>Souhardho Banquet Hall</h3>
                     <p>35, GT Rd, Konnagar, West Bengal 712235</p>
-                    <p>07:00 PM Onwards</p>
                 </div>
                 <canvas id="scratch-canvas-venue" width="320" height="150"></canvas>
             </div>
@@ -93,42 +102,29 @@
         <div style="padding-bottom: 20px;">
             <p class="tagline" style="text-align: center;margin-bottom: 20px;">Schedule of Events</p>
             <div class="schedule-wrapper" id="scheduleWrapper">
-
                 <div class="timeline-container" id="timelineContainer">
                     <div class="line-backbone"></div>
-
-
                     <div class="scroll-marker" id="scrollMarker">🌹</div>
-
-
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">10:00 AM</div>
                         <div class="event-col">Guest Arrival</div>
                     </div>
-
-
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">12:00 PM</div>
                         <div class="event-col">Welcome Ceremony</div>
                     </div>
-
-
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">02:00 PM</div>
                         <div class="event-col">Mocktail Hour</div>
                     </div>
-
-
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">04:00 PM</div>
                         <div class="event-col">Grand Dinner</div>
                     </div>
-
-
                     <div class="time-row">
                         <div class="node"></div>
                         <div class="time-col">06:00 PM</div>
@@ -137,7 +133,7 @@
                 </div>
             </div>
         </div>
-->
+    -->
 
         <!-- 4. HORIZONTAL SCROLLING PIC GALLERY (WITH DESKTOP UPGRADES) -->
         <p class="gallery-title">Our Moments</p>
