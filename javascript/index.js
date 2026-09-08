@@ -45,6 +45,7 @@ function onYouTubeIframeAPIReady() {
             'loop': 1,
             'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
             'enablejsapi': 1,
+            'origin': currentOrigin, // <--- Add this to resolve postMessage origin mismatch
             'playsinline': 1
         },
         events: {
@@ -265,7 +266,7 @@ function setupScratchCanvas(canvasId) {
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#bc9c6c";
+    ctx.fillStyle = "#d4a3a8"; // Dusty Rose / Metallic Gold shade "#bc9c6c";
     ctx.fillRect(0, 0, width, height);
     ctx.font = "600 12px Montserrat, sans-serif";
     ctx.fillStyle = "#ffffff";
