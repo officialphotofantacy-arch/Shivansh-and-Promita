@@ -58,6 +58,50 @@ body {
     }
 }
 
+.rose-petal {
+    position: absolute;
+    /* Rich Rose Palette Gradient */
+    background: linear-gradient(135deg, #e0325c 0%, #b81d43 60%, #850e2b 100%);
+    
+    /* Asymmetrical teardrop curve characteristic of a rose petal */
+    border-radius: 50% 0% 50% 50%;
+    
+    opacity: 0.88;
+    transform-origin: center center;
+    animation: roseFall 9s linear infinite;
+    
+    /* Adds depth and subtle realistic curl highlight */
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.25), 
+                inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+    filter: drop-shadow(0 4px 8px rgba(133, 14, 43, 0.15));
+}
+
+/* Natural fluttering animation for falling rose petals */
+@keyframes roseFall {
+    0% {
+        top: -10%;
+        transform: translateX(0) rotate(0deg) rotateY(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.9;
+    }
+    25% {
+        transform: translateX(25px) rotate(45deg) rotateY(180deg);
+    }
+    50% {
+        transform: translateX(-20px) rotate(110deg) rotateX(120deg);
+    }
+    75% {
+        transform: translateX(30px) rotate(220deg) rotateY(240deg);
+    }
+    100% {
+        top: 105%;
+        transform: translateX(-10px) rotate(360deg) rotateX(360deg);
+        opacity: 0.2;
+    }
+}
+
 /* 1. ENVELOPE OPENING MECHANISM */
 .envelope-wrapper {
     position: fixed;
@@ -370,6 +414,39 @@ h1.names {
     .img-card {
         flex: 0 0 calc(33.333% - 14px);
         /* Perfectly snaps 3 images per frame on big screens */
+    }
+}
+
+/* 4.1. Swipe hint for mobile users */
+.swipe-hint {
+    display: none; /* Hidden by default on desktop */
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: #850e2b; /* Rose/Crimson theme color */
+    background: rgba(224, 50, 92, 0.08);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin: 0 auto 10px auto;
+    width: fit-content;
+    animation: pulseSwipe 2s infinite;
+    transition: opacity 0.5s ease;
+}
+
+/* Subtle animation to draw attention */
+@keyframes pulseSwipe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.03); }
+}
+
+/* Display swipe hint on touch screens and mobile viewports */
+@media (max-width: 768px), (pointer: coarse) {
+    .swipe-hint {
+        display: block;
+    }
+    /* Hide desktop arrows on mobile to keep layout clean */
+    .nav-arrow {
+        display: none !important;
     }
 }
 

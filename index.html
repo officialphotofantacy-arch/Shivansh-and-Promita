@@ -18,11 +18,14 @@
 </head>
 
 <body>
+
+    <!-- PETALS -->
     <div id="petal-container"></div>
 
-
+    <!-- YOUTUBE VIDEO PLAYER (HIDDEN)-->
     <div id="youtube-player" style="display: none;"></div>
 
+    <!-- AUDIO CONTROL BUTTON-->
     <button class="audio-control" id="audioControlBtn" onclick="toggleAudio(event)">
         <svg id="speakerIcon" viewBox="0 0 24 24">
             <path
@@ -52,18 +55,18 @@
 
         <!-- 5. SCRATCH TO REVEAL NAME -->
         <div class="scratch-section">
-            <p class="tagline">Scratch to Reveal Name</p>
+            <p class="tagline"
+                style="background: #ffffff; width: 100%; box-shadow: 0 15px 35px rgba(216, 203, 189, 0.25);">Scratch to
+                Reveal Name</p>
             <div class="scratch-container" id="scratchContainer">
                 <div class="secret-content">
-                    <p style="font-size: 18px; font-style: italic; color: #6c6359; margin-bottom: 10px;">Join us as we
-                        celebrate<br>
-                        the sacred union of</p>
                     <h1 class="names">Promita Bhattacharyya <br> & </br>Kailash Shivansh Gupta</h1>
                 </div>
                 <canvas id="scratch-canvas" width="320" height="180"></canvas>
             </div>
         </div>
 
+        <!-- 3. SAVE THE DATE WITH COUNTDOWN TIMER -->
         <div class="card">
             <p class="tagline">Save the Date</p>
             <p class="tagline" style="color: var(--accent);">
@@ -80,6 +83,8 @@
 
         <!-- 5. SCRATCH TO REVEAL VENUE -->
         <div class="scratch-section">
+            <p class="tagline" style="font-size: 18px; font-style: italic; color: #6c6359; margin-bottom: 10px;">
+                Join Us At</p>
             <p class="tagline">Scratch to Reveal Venue Details</p>
             <div class="scratch-container" id="scratchContainerVenue">
                 <div class="secret-content">
@@ -131,6 +136,10 @@
         <!-- 4. HORIZONTAL SCROLLING PIC GALLERY (WITH DESKTOP UPGRADES) -->
         <p class="gallery-title">Our Moments</p>
         <div class="gallery-container-outer">
+            <!-- Swipe indicator for touch devices -->
+            <div class="swipe-hint" id="swipeHint">
+                <span>👈 Swipe to view more 👉</span>
+            </div>
             <button class="nav-arrow arrow-left" onclick="scrollGallery(-300)">&#10094;</button>
             <div class="scrolling-wrapper" id="galleryWrapper">
                 <!-- Fallback loading messages. JavaScript populates random Google Drive photos here -->
@@ -147,8 +156,6 @@
             <button class="nav-arrow arrow-right" onclick="scrollGallery(300)">&#10095;</button>
         </div>
 
-
-
         <!-- 6. GOOGLE MAP LOCATION -->
         <div class="card" style="padding: 30px 20px;">
             <p class="tagline">Find Your Way</p>
@@ -161,7 +168,13 @@
             </div>
         </div>
 
-    </div>
+        <!-- 7. RSVP FORM -->
+        <div class="scratch-section" style="padding: 30px 20px;">
+            <p class="tagline"
+                style="background: #ffffff; width: 100%; box-shadow: 0 15px 35px rgba(216, 203, 189, 0.25);">Contact Us
+                : 98306 39061</p>
+        </div>
+
 
 </body>
 

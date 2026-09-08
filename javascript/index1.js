@@ -1,8 +1,8 @@
 // --- GOOGLE DRIVE & YOUTUBE CONFIGURATION ---
 const DRIVE_API_KEY = "AIzaSyCDJLgn8tdBuW_Wbcz5bq3-AvIvWbUf__s";
-const DRIVE_BACKGROUND_IMAGE_ID = "19fWRZdgZkohOZ8OWIFVmOVMVa9Q2nxzu"; //"1CQWBR1UT8FdqjuOBiGb5_qYq815WEowu";
+const DRIVE_BACKGROUND_IMAGE_ID = "19fWRZdgZkohOZ8OWIFVmOVMVa9Q2nxzu";
 const DRIVE_FOLDER_ID_FOR_CLIENT = "1V-jHThQiQln-XA5UX4dnDd0Zgyka137r";
-const YOUTUBE_VIDEO_ID = "nvpbdKaaNwQ"; // YouTube Video ID
+const YOUTUBE_VIDEO_ID = "nvpbdKaaNwQ";
 const MAX_GALLERY_IMAGES = 5;
 
 // Static backup images in case Drive API limits or network errors occur
@@ -38,14 +38,14 @@ function onYouTubeIframeAPIReady() {
         height: '0',
         width: '0',
         videoId: YOUTUBE_VIDEO_ID,
-        host: 'https://www.youtube.com', // Explicitly set host target domain
+        host: 'https://www.youtube.com',
         playerVars: {
             'autoplay': 0,
             'controls': 0,
             'loop': 1,
-            'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
+            'playlist': YOUTUBE_VIDEO_ID,
             'enablejsapi': 1,
-            'origin': currentOrigin, // <--- Add this to resolve postMessage origin mismatch
+            'origin': currentOrigin,
             'playsinline': 1
         },
         events: {
@@ -59,7 +59,6 @@ function onPlayerReady(event) {
     isPlayerReady = true;
     console.log("YouTube background audio player ready.");
 
-    // If envelope was clicked before YouTube player finished loading
     if (playPending && player) {
         startYouTubeAudio();
     }
@@ -93,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const marker = document.getElementById('scrollMarker');
     const timeline = document.getElementById('timelineContainer');
 
-
     if (wrapper && marker && timeline) {
         wrapper.addEventListener('scroll', () => {
             const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
@@ -112,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const swipeHint = document.getElementById('swipeHint');
     if (galleryWrapper && swipeHint) {
         galleryWrapper.addEventListener('scroll', () => {
-            // Fade out swipe hint after first interaction
             if (galleryWrapper.scrollLeft > 20) {
                 swipeHint.style.opacity = '0';
                 setTimeout(() => {
@@ -136,14 +133,12 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
-    // Trigger playback directly inside user click gesture
     if (isPlayerReady && player) {
         startYouTubeAudio();
     } else {
-        playPending = true; // Queue playback for when API ready event fires
+        playPending = true;
     }
 
-    // Delay scratch card setup briefly to ensure CSS layout bounding rects are correct
     setTimeout(() => {
         initScratchCard();
         initScratchCardVenue();
@@ -155,7 +150,6 @@ async function openEnvelope() {
 // 4. Toggle YouTube Audio Play / Pause
 function toggleAudio(event) {
     if (event) event.stopPropagation();
-
     if (!player || typeof player.getPlayerState !== 'function') return;
 
     const state = player.getPlayerState();
@@ -166,16 +160,13 @@ function toggleAudio(event) {
     }
 }
 
-// Helper to update speaker icon SVG paths
 function updateSpeakerIcon(playing) {
     if (!speakerIcon) speakerIcon = document.getElementById('speakerIcon');
     if (!speakerIcon) return;
 
     if (playing) {
-        // Speaker ON path
         speakerIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
     } else {
-        // Speaker OFF path
         speakerIcon.innerHTML = `<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`;
     }
 }
@@ -186,7 +177,6 @@ function scrollGallery(amount) {
         gallery.scrollBy({ left: amount, behavior: 'smooth' });
     }
 }
-
 
 // 5. Load Google Drive Gallery Images
 async function loadGoogleDriveImages() {
@@ -206,21 +196,13 @@ async function loadGoogleDriveImages() {
 
         const data = await response.json();
 
-        //console.log("Drive API response:", data);
-
         if (data.files && data.files.length > 0) {
-            //let shuffledFiles = data.files.sort(() => 0.5 - Math.random());
-            //let selectedFiles = shuffledFiles.slice(0, MAX_GALLERY_IMAGES);
-
-            // Filter out background image first so it doesn't affect the gallery limit count
+            // Filter background image out prior to sorting
             const galleryFiles = data.files.filter(file => file.id !== DRIVE_BACKGROUND_IMAGE_ID);
 
-            // Sort files alphabetically by name (Natural Alphanumeric Sort)
+            // Alphanumeric natural sort (e.g. photo_1, photo_2, photo_10)
             galleryFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
-            //console.log("Drive API response sorted:", galleryFiles);
-
-            // Take the top images based on MAX_GALLERY_IMAGES limit
             const selectedFiles = galleryFiles.slice(0, MAX_GALLERY_IMAGES);
             wrapper.innerHTML = "";
 
@@ -253,41 +235,15 @@ function startFlowerRain() {
     if (!container) return;
     const petalCount = 35;
     for (let i = 0; i < petalCount; i++) {
-        //createPetal(container);
         createRosePetal(container);
     }
-}
-
-function createPetal(container) {
-    const petal = document.createElement('div');
-    petal.className = 'petal';
-
-    const size = Math.random() * 14 + 8;
-    const leftPos = Math.random() * 100;
-    const delay = Math.random() * 10;
-    const duration = Math.random() * 6 + 6;
-
-    petal.style.width = `${size}px`;
-    petal.style.height = `${size * 1.2}px`;
-    petal.style.left = `${leftPos}vw`;
-    petal.style.animationDelay = `${delay}s`;
-    petal.style.animationDuration = `${duration}s`;
-
-    const hueShift = Math.floor(Math.random() * 20);
-    petal.style.backgroundColor = `hsl(${345 + hueShift}, 100%, 88%)`;
-
-    container.appendChild(petal);
-
-    petal.addEventListener('animationiteration', () => {
-        petal.style.left = `${Math.random() * 100}vw`;
-    });
 }
 
 function createRosePetal(container) {
     const petal = document.createElement('div');
     petal.className = 'rose-petal';
 
-    const size = Math.random() * 12 + 10; // Slightly larger for rose petals
+    const size = Math.random() * 12 + 10;
     const leftPos = Math.random() * 100;
     const delay = Math.random() * 8;
     const duration = Math.random() * 5 + 6;
@@ -298,9 +254,9 @@ function createRosePetal(container) {
     petal.style.animationDelay = `${delay}s`;
     petal.style.animationDuration = `${duration}s`;
 
-    // Deep Rose / Crimson palette randomization
-    const hue = Math.floor(Math.random() * 12) + 340; // Crimson to Deep Red range
-    const lightness = Math.floor(Math.random() * 20) + 35; // Rich shade variation
+    // Rose/Crimson palette randomized
+    const hue = Math.floor(Math.random() * 12) + 340;
+    const lightness = Math.floor(Math.random() * 20) + 35;
     petal.style.background = `linear-gradient(135deg, hsl(${hue}, 85%, ${lightness + 15}%), hsl(${hue}, 80%, ${lightness}%))`;
 
     container.appendChild(petal);
@@ -326,7 +282,8 @@ function setupScratchCanvas(canvasId) {
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#d4a3a8"; // Dusty Rose / Metallic Gold shade "#bc9c6c";
+    // Rose Gold / Metallic overlay
+    ctx.fillStyle = "#d4a3a8";
     ctx.fillRect(0, 0, width, height);
     ctx.font = "600 12px Montserrat, sans-serif";
     ctx.fillStyle = "#ffffff";
