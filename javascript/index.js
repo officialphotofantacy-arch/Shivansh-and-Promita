@@ -17,6 +17,8 @@ const FALLBACK_IMAGES = [
 let audioBtn = null;
 let speakerIcon = null;
 let player = null;
+let isPlayerReady = false;
+let playPending = false;
 
 // 1. Dynamic Load YouTube IFrame API Script
 (function loadYouTubeAPI() {
@@ -28,7 +30,6 @@ let player = null;
 
 // 2. Automatically triggered when YouTube API is ready
 function onYouTubeIframeAPIReady() {
-    // Resolve origin dynamically (works on both http://localhost and https://)
     const currentOrigin = (window.location.origin && window.location.origin !== "null")
         ? window.location.origin
         : "https://www.youtube.com";
@@ -43,6 +44,7 @@ function onYouTubeIframeAPIReady() {
             'loop': 1,
             'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
             'enablejsapi': 1,
+            'playsinline': 1,
             'origin': currentOrigin
         },
         events: {
@@ -53,7 +55,24 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
+    isPlayerReady = true;
     console.log("YouTube background audio player ready.");
+
+    // If envelope was clicked before YouTube player finished loading
+    if (playPending && player) {
+        startYouTubeAudio();
+    }
+}
+
+function startYouTubeAudio() {
+    if (!player) return;
+    try {
+        player.unMute();
+        player.setVolume(100);
+        player.playVideo();
+    } catch (err) {
+        console.warn("YouTube Audio Playback Error:", err);
+    }
 }
 
 function onPlayerStateChange(event) {
@@ -100,9 +119,11 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
-    // Play YouTube Audio directly within user touch/click gesture
-    if (player && typeof player.playVideo === 'function') {
-        player.playVideo();
+    // Trigger playback directly inside user click gesture
+    if (isPlayerReady && player) {
+        startYouTubeAudio();
+    } else {
+        playPending = true; // Queue playback for when API ready event fires
     }
 
     // Delay scratch card setup briefly to ensure CSS layout bounding rects are correct
@@ -124,7 +145,7 @@ function toggleAudio(event) {
     if (state === YT.PlayerState.PLAYING) {
         player.pauseVideo();
     } else {
-        player.playVideo();
+        startYouTubeAudio();
     }
 }
 
