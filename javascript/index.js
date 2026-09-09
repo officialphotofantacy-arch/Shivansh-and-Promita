@@ -45,7 +45,7 @@ function onYouTubeIframeAPIReady() {
             'loop': 1,
             'playlist': YOUTUBE_VIDEO_ID, // Required for looping YouTube videos
             'enablejsapi': 1,
-            'origin': currentOrigin, // <--- Add this to resolve postMessage origin mismatch
+            'origin': currentOrigin,
             'playsinline': 1
         },
         events: {
@@ -59,7 +59,6 @@ function onPlayerReady(event) {
     isPlayerReady = true;
     console.log("YouTube background audio player ready.");
 
-    // If envelope was clicked before YouTube player finished loading
     if (playPending && player) {
         startYouTubeAudio();
     }
@@ -84,6 +83,31 @@ function onPlayerStateChange(event) {
     }
 }
 
+// Modify your openEnvelope function or call this snippet inside it:
+function handleMobileLetterPeek() {
+    const letterPeek = document.querySelector('.letter-peek');
+    if (!letterPeek) return;
+
+    // Check if device width is mobile (480px or less)
+    if (window.innerWidth <= 480) {
+        // Show letter-peek
+        letterPeek.style.display = 'block';
+        letterPeek.classList.add('peek-active');
+
+        // Hide it after 2000 milliseconds (2 seconds)
+        setTimeout(() => {
+            letterPeek.classList.remove('peek-active');
+            // Optional: fade out before changing display
+            letterPeek.style.transition = 'opacity 0.4s ease';
+            letterPeek.style.opacity = '0';
+
+            setTimeout(() => {
+                letterPeek.style.display = 'none';
+            }, 400); // Waits for fade-out transition to complete
+        }, 2000);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     audioBtn = document.getElementById('audioControlBtn');
     speakerIcon = document.getElementById('speakerIcon');
@@ -92,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const wrapper = document.getElementById('scheduleWrapper');
     const marker = document.getElementById('scrollMarker');
     const timeline = document.getElementById('timelineContainer');
-
 
     if (wrapper && marker && timeline) {
         wrapper.addEventListener('scroll', () => {
@@ -112,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const swipeHint = document.getElementById('swipeHint');
     if (galleryWrapper && swipeHint) {
         galleryWrapper.addEventListener('scroll', () => {
-            // Fade out swipe hint after first interaction
             if (galleryWrapper.scrollLeft > 20) {
                 swipeHint.style.opacity = '0';
                 setTimeout(() => {
@@ -126,6 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // 3. Open Envelope Handler
 async function openEnvelope() {
     document.getElementById('envelopeWrapper').classList.add('opened');
+
+    // Trigger the 2-second peek on mobile
+    handleMobileLetterPeek();
+    
     document.getElementById('mainContent').classList.add('visible');
 
     const petalContainer = document.getElementById('petal-container');
@@ -136,14 +162,12 @@ async function openEnvelope() {
 
     if (audioBtn) audioBtn.style.display = 'flex';
 
-    // Trigger playback directly inside user click gesture
     if (isPlayerReady && player) {
         startYouTubeAudio();
     } else {
-        playPending = true; // Queue playback for when API ready event fires
+        playPending = true;
     }
 
-    // Delay scratch card setup briefly to ensure CSS layout bounding rects are correct
     setTimeout(() => {
         initScratchCard();
         initScratchCardVenue();
@@ -166,16 +190,13 @@ function toggleAudio(event) {
     }
 }
 
-// Helper to update speaker icon SVG paths
 function updateSpeakerIcon(playing) {
     if (!speakerIcon) speakerIcon = document.getElementById('speakerIcon');
     if (!speakerIcon) return;
 
     if (playing) {
-        // Speaker ON path
         speakerIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
     } else {
-        // Speaker OFF path
         speakerIcon.innerHTML = `<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`;
     }
 }
@@ -187,8 +208,7 @@ function scrollGallery(amount) {
     }
 }
 
-
-// 5. Load Google Drive Gallery Images
+// 5. Load Google Drive Gallery Images with Mobile Center Alignment Fix
 async function loadGoogleDriveImages() {
     const wrapper = document.getElementById('galleryWrapper');
     const mainContent = document.getElementById('mainContent');
@@ -206,31 +226,29 @@ async function loadGoogleDriveImages() {
 
         const data = await response.json();
 
-        //console.log("Drive API response:", data);
-
         if (data.files && data.files.length > 0) {
-            //let shuffledFiles = data.files.sort(() => 0.5 - Math.random());
-            //let selectedFiles = shuffledFiles.slice(0, MAX_GALLERY_IMAGES);
-
-            // Filter out background image first so it doesn't affect the gallery limit count
             const galleryFiles = data.files.filter(file => file.id !== DRIVE_BACKGROUND_IMAGE_ID);
-
-            // Sort files alphabetically by name (Natural Alphanumeric Sort)
             galleryFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
-            //console.log("Drive API response sorted:", galleryFiles);
-
-            // Take the top images based on MAX_GALLERY_IMAGES limit
             const selectedFiles = galleryFiles.slice(0, MAX_GALLERY_IMAGES);
             wrapper.innerHTML = "";
 
-            selectedFiles.forEach(file => {
+            selectedFiles.forEach((file, index) => {
                 const imgUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
                 const card = document.createElement('div');
                 card.className = 'img-card';
                 card.innerHTML = `<img src="${imgUrl}" alt="${file.name}" onerror="this.src='${FALLBACK_IMAGES[0]}'">`;
                 wrapper.appendChild(card);
             });
+
+            // Auto-center the middle card in view after images load
+            setTimeout(() => {
+                const cards = wrapper.querySelectorAll('.img-card');
+                if (cards.length > 0) {
+                    const midIndex = Math.floor(cards.length / 2);
+                    cards[midIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            }, 300);
         } else {
             throw new Error("No files found in folder.");
         }
@@ -253,44 +271,18 @@ function startFlowerRain() {
     if (!container) return;
     const petalCount = 35;
     for (let i = 0; i < petalCount; i++) {
-        //createPetal(container);
         createRosePetal(container);
     }
-}
-
-function createPetal(container) {
-    const petal = document.createElement('div');
-    petal.className = 'rose-petal';
-
-    const size = Math.random() * 14 + 8;
-    const leftPos = Math.random() * 100;
-    const delay = Math.random() * 10;
-    const duration = Math.random() * 6 + 6;
-
-    petal.style.width = `${size}px`;
-    petal.style.height = `${size * 1.2}px`;
-    petal.style.left = `${leftPos}vw`;
-    petal.style.animationDelay = `${delay}s`;
-    petal.style.animationDuration = `${duration}s`;
-
-    const hueShift = Math.floor(Math.random() * 20);
-    petal.style.backgroundColor = `hsl(${345 + hueShift}, 100%, 88%)`;
-
-    container.appendChild(petal);
-
-    petal.addEventListener('animationiteration', () => {
-        petal.style.left = `${Math.random() * 100}vw`;
-    });
 }
 
 function createRosePetal(container) {
     const petal = document.createElement('div');
     petal.className = 'rose-petal';
 
-    const size = Math.random() * 12 + 10; // Slightly larger for rose petals
+    const size = Math.random() * 12 + 10;
     const leftPos = Math.random() * 100;
     const delay = Math.random() * 3;
-    const duration = Math.random() * 2.5 + 2.5; // Faster fall for rose petals
+    const duration = Math.random() * 2.5 + 2.5;
 
     petal.style.width = `${size}px`;
     petal.style.height = `${size * 1.3}px`;
@@ -298,9 +290,8 @@ function createRosePetal(container) {
     petal.style.animationDelay = `${delay}s`;
     petal.style.animationDuration = `${duration}s`;
 
-    // Deep Rose / Crimson palette randomization
-    const hue = Math.floor(Math.random() * 12) + 340; // Crimson to Deep Red range
-    const lightness = Math.floor(Math.random() * 20) + 35; // Rich shade variation
+    const hue = Math.floor(Math.random() * 12) + 340;
+    const lightness = Math.floor(Math.random() * 20) + 35;
     petal.style.background = `linear-gradient(135deg, hsl(${hue}, 85%, ${lightness + 15}%), hsl(${hue}, 80%, ${lightness}%))`;
 
     container.appendChild(petal);
@@ -310,7 +301,7 @@ function createRosePetal(container) {
     });
 }
 
-// 7. Scratch Card Setup
+// 7. Scratch Card Setup (With Touch Scrolling Lock)
 function setupScratchCanvas(canvasId) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -326,7 +317,7 @@ function setupScratchCanvas(canvasId) {
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#d4a3a8"; // Dusty Rose / Metallic Gold shade "#bc9c6c";
+    ctx.fillStyle = "#d4a3a8";
     ctx.fillRect(0, 0, width, height);
     ctx.font = "600 12px Montserrat, sans-serif";
     ctx.fillStyle = "#ffffff";
@@ -352,7 +343,11 @@ function setupScratchCanvas(canvasId) {
 
     function scratch(e) {
         if (!isDrawing) return;
-        if (e.cancelable) e.preventDefault();
+        
+        // Prevent background scrolling while scratching on touch screens
+        if (e.cancelable) {
+            e.preventDefault();
+        }
 
         const pos = getTouchPos(e);
         ctx.globalCompositeOperation = "destination-out";
@@ -361,17 +356,25 @@ function setupScratchCanvas(canvasId) {
         ctx.fill();
     }
 
-    const startScratch = (e) => { isDrawing = true; scratch(e); };
-    const stopScratch = () => { isDrawing = false; };
+    const startScratch = (e) => { 
+        isDrawing = true; 
+        if (e.cancelable) e.preventDefault();
+        scratch(e); 
+    };
+    
+    const stopScratch = () => { 
+        isDrawing = false; 
+    };
 
     canvas.addEventListener("mousedown", startScratch);
     canvas.addEventListener("mousemove", scratch);
     canvas.addEventListener("mouseup", stopScratch);
     canvas.addEventListener("mouseleave", stopScratch);
 
+    // Explicitly set passive: false to allow preventDefault on touch events
     canvas.addEventListener("touchstart", startScratch, { passive: false });
     canvas.addEventListener("touchmove", scratch, { passive: false });
-    canvas.addEventListener("touchend", stopScratch);
+    canvas.addEventListener("touchend", stopScratch, { passive: false });
 }
 
 function initScratchCard() {

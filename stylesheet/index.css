@@ -753,3 +753,111 @@ h1.names {
     transform: translateX(-50%) scale(0.8);
     opacity: 0.3;
 }
+
+/* Mobile Letter Peek Visibility Styles */
+@media (max-width: 480px) {
+    .letter-peek {
+        display: none; /* Hidden by default */
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .letter-peek.peek-active {
+        display: block !important;
+        opacity: 1 !important;
+    }
+}
+
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT & MEDIA QUERIES
+   ========================================================================== */
+
+/* 1. Fluid scaling for the Envelope on mobile devices */
+@media (max-width: 480px) {
+    .envelope {
+        width: 310px;
+        height: 230px;
+    }
+
+    /* Recalculate borders for small envelope proportions */
+    .envelope::before {
+        border-width: 115px 155px 115px 155px;
+    }
+
+    .flap {
+        border-width: 115px 155px 0 155px;
+    }
+
+    .flap-text {
+        top: -100px;
+        width: 160px;
+        left: -80px;
+        font-size: 22px;
+    }
+
+    .wax-seal {
+        top: 90px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .wax-seal img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .letter-peek {
+        height: 180px;
+        padding-top: 30px;
+    }
+
+    .letter-peek p {
+        font-size: 16px !important;
+    }
+}
+
+/* 2. Responsive Cards and Content Containers */
+.main-content {
+    width: 100%;
+    padding: 20px 15px;
+}
+
+.card {
+    width: 100%;
+    padding: 40px 20px;
+}
+
+/* 3. Fluid Scratch Cards */
+.scratch-container {
+    max-width: 100%;
+    width: 320px;
+}
+
+/* 4. Dynamic Countdown Timer Layout for Small Screens */
+@media (max-width: 400px) {
+    .countdown-container {
+        gap: 8px;
+    }
+
+    .time-box {
+        min-width: 58px;
+        padding: 10px 5px;
+    }
+
+    .count {
+        font-size: 18px;
+    }
+
+    .label {
+        font-size: 8px;
+    }
+}
+
+/* 5. Embedded Map Aspect Ratio Scaling */
+.map-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: 220px;
+}
