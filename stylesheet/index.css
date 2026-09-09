@@ -510,8 +510,26 @@ h1.names {
 .scratch-section {
     margin: 50px 0;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+    width: 100%;
 }
 
+.tagline-banner {
+    width: 100%;
+    max-width: 320px;
+    padding: 8px 0;
+    background: #f4eee1;
+    color: #850e2b;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    border-radius: 4px 4px 0 0;
+}
 
 .scratch-container {
     position: relative;
@@ -520,6 +538,10 @@ h1.names {
     margin: 20px auto;
     user-select: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 

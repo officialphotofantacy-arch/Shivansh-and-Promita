@@ -162,6 +162,12 @@ async function openEnvelope() {
 
     document.getElementById('mainContent').classList.add('visible');
 
+    // Smoothly ensure the viewport starts right at the top
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
     const petalContainer = document.getElementById('petal-container');
     if (petalContainer) {
         petalContainer.style.display = 'block';
@@ -176,10 +182,11 @@ async function openEnvelope() {
         playPending = true;
     }
 
+    // Initialize both scratch canvases after mainContent transitions in
     setTimeout(() => {
         initScratchCard();
         initScratchCardVenue();
-    }, 100);
+    }, 150);
 
     loadGoogleDriveImages();
 }
