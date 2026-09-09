@@ -94,17 +94,17 @@ function handleMobileLetterPeek() {
         letterPeek.style.display = 'block';
         letterPeek.classList.add('peek-active');
 
-        // Hide it after 2000 milliseconds (2 seconds)
+        // Hide it after 5000 milliseconds (5 seconds)
         setTimeout(() => {
             letterPeek.classList.remove('peek-active');
             // Optional: fade out before changing display
-            letterPeek.style.transition = 'opacity 0.4s ease';
+            letterPeek.style.transition = 'opacity 0.5s ease';
             letterPeek.style.opacity = '0';
 
             setTimeout(() => {
                 letterPeek.style.display = 'none';
-            }, 400); // Waits for fade-out transition to complete
-        }, 2000);
+            }, 500); // Waits for fade-out transition to complete
+        }, 5000);
     }
 }
 
@@ -133,15 +133,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // Gallery swipe hint auto-hide on interaction
     const galleryWrapper = document.getElementById('galleryWrapper');
     const swipeHint = document.getElementById('swipeHint');
+
     if (galleryWrapper && swipeHint) {
-        galleryWrapper.addEventListener('scroll', () => {
-            if (galleryWrapper.scrollLeft > 20) {
+        let hasUserInteracted = false;
+
+        const hideHint = () => {
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
                 swipeHint.style.opacity = '0';
                 setTimeout(() => {
                     swipeHint.style.display = 'none';
                 }, 500);
             }
-        }, { passive: true });
+        };
+
+        // Detect real user touch gestures instead of generic scroll events
+        galleryWrapper.addEventListener('touchstart', hideHint, { passive: true });
+        galleryWrapper.addEventListener('mousedown', hideHint, { passive: true });
     }
 });
 
@@ -149,9 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
 async function openEnvelope() {
     document.getElementById('envelopeWrapper').classList.add('opened');
 
-    // Trigger the 2-second peek on mobile
+    // Trigger the 5-second peek on mobile
     handleMobileLetterPeek();
-    
+
     document.getElementById('mainContent').classList.add('visible');
 
     const petalContainer = document.getElementById('petal-container');
@@ -204,7 +212,23 @@ function updateSpeakerIcon(playing) {
 function scrollGallery(amount) {
     const gallery = document.getElementById('galleryWrapper');
     if (gallery) {
-        gallery.scrollBy({ left: amount, behavior: 'smooth' });
+        
+        //gallery.scrollBy({ left: amount, behavior: 'smooth' });
+
+        // Dynamically calculate one card width + gap for precise alignment
+        const firstCard = gallery.querySelector('.img-card');
+        let scrollDistance = amount;
+
+        if (firstCard) {
+            const cardWidth = firstCard.offsetWidth;
+            const gap = parseInt(window.getComputedStyle(gallery).gap) || 20;
+            scrollDistance = amount > 0 ? (cardWidth + gap) : -(cardWidth + gap);
+        }
+
+        gallery.scrollBy({
+            left: scrollDistance,
+            behavior: 'smooth'
+        });
     }
 }
 
@@ -242,13 +266,15 @@ async function loadGoogleDriveImages() {
             });
 
             // Auto-center the middle card in view after images load
+            /*
             setTimeout(() => {
                 const cards = wrapper.querySelectorAll('.img-card');
                 if (cards.length > 0) {
                     const midIndex = Math.floor(cards.length / 2);
                     cards[midIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 }
-            }, 300);
+            }, 300);*/
+
         } else {
             throw new Error("No files found in folder.");
         }
@@ -266,10 +292,16 @@ function renderFallbackGallery(wrapper) {
 }
 
 // 6. Petals / Flower Rain Animation
+// Optimized Mobile Flower Rain
 function startFlowerRain() {
     const container = document.getElementById('petal-container');
     if (!container) return;
-    const petalCount = 35;
+
+    // Reduce DOM node allocation on smaller viewports
+    const isMobile = window.innerWidth <= 480;
+    const petalCount = isMobile ? 15 : 30;
+
+    container.innerHTML = '';
     for (let i = 0; i < petalCount; i++) {
         createRosePetal(container);
     }
@@ -301,32 +333,37 @@ function createRosePetal(container) {
     });
 }
 
-// 7. Scratch Card Setup (With Touch Scrolling Lock)
+// Optimized Scratch Canvas with Throttled Touch Handling
 function setupScratchCanvas(canvasId) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
+    let animFrameRequested = false;
 
-    const rect = canvas.getBoundingClientRect();
-    const width = rect.width || 320;
-    const height = rect.height || 150;
-    const dpr = window.devicePixelRatio || 1;
+    function resizeAndScale() {
+        const rect = canvas.getBoundingClientRect();
+        const width = rect.width || 320;
+        const height = rect.height || 150;
+        const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#d4a3a8";
-    ctx.fillRect(0, 0, width, height);
-    ctx.font = "600 12px Montserrat, sans-serif";
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("SCRATCH HERE", width / 2, height / 2);
+        ctx.fillStyle = "#d4a3a8";
+        ctx.fillRect(0, 0, width, height);
+        ctx.font = "600 12px Montserrat, sans-serif";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("SCRATCH HERE", width / 2, height / 2);
+    }
+
+    resizeAndScale();
 
     function getTouchPos(e) {
-        const currentRect = canvas.getBoundingClientRect();
+        const rect = canvas.getBoundingClientRect();
         let clientX = e.clientX;
         let clientY = e.clientY;
 
@@ -336,46 +373,47 @@ function setupScratchCanvas(canvasId) {
         }
 
         return {
-            x: clientX - currentRect.left,
-            y: clientY - currentRect.top
+            x: clientX - rect.left,
+            y: clientY - rect.top
         };
     }
 
     function scratch(e) {
         if (!isDrawing) return;
-        
-        // Prevent background scrolling while scratching on touch screens
-        if (e.cancelable) {
-            e.preventDefault();
-        }
+        if (e.cancelable) e.preventDefault();
 
-        const pos = getTouchPos(e);
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
-        ctx.fill();
+        if (!animFrameRequested) {
+            animFrameRequested = true;
+            requestAnimationFrame(() => {
+                const pos = getTouchPos(e);
+                ctx.globalCompositeOperation = "destination-out";
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+                ctx.fill();
+                animFrameRequested = false;
+            });
+        }
     }
 
-    const startScratch = (e) => { 
-        isDrawing = true; 
+    const startScratch = (e) => {
+        isDrawing = true;
         if (e.cancelable) e.preventDefault();
-        scratch(e); 
+        scratch(e);
     };
-    
-    const stopScratch = () => { 
-        isDrawing = false; 
-    };
+
+    const stopScratch = () => { isDrawing = false; };
 
     canvas.addEventListener("mousedown", startScratch);
     canvas.addEventListener("mousemove", scratch);
     canvas.addEventListener("mouseup", stopScratch);
     canvas.addEventListener("mouseleave", stopScratch);
 
-    // Explicitly set passive: false to allow preventDefault on touch events
     canvas.addEventListener("touchstart", startScratch, { passive: false });
     canvas.addEventListener("touchmove", scratch, { passive: false });
     canvas.addEventListener("touchend", stopScratch, { passive: false });
 }
+
+
 
 function initScratchCard() {
     setupScratchCanvas("scratch-canvas");

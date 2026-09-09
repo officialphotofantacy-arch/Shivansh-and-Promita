@@ -74,6 +74,9 @@ body {
     box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.25),
         inset 1px 1px 2px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 4px 8px rgba(133, 14, 43, 0.15));
+
+    will-change: transform, top;
+    backface-visibility: hidden;
 }
 
 /* Natural fluttering animation for falling rose petals */
@@ -765,6 +768,52 @@ h1.names {
     .letter-peek.peek-active {
         display: block !important;
         opacity: 1 !important;
+    }
+}
+
+/* Enable Touch Action Management & Hardware Acceleration */
+canvas {
+    touch-action: none; /* Prevents touch gesture conflicts with browser scrolling */
+    will-change: transform;
+}
+
+.scrolling-wrapper {
+    -webkit-overflow-scrolling: touch; /* Native smooth momentum scrolling on iOS Safari */
+    touch-action: pan-x;
+}
+
+.rose-petal {
+    will-change: transform, top;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Fix sticky mobile hover bug on envelope */
+@media (hover: hover) and (pointer: fine) {
+    .envelope:hover .flap {
+        transform: rotateX(180deg);
+    }
+    .envelope:hover .letter-peek {
+        transform: translateY(-80px);
+    }
+}
+
+/* SWIPE HINT STYLING */
+.swipe-hint {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: #8a817c;
+    margin-bottom: 10px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: none; /* Prevents touch blocking */
+}
+
+/* Optional: Show swipe hint ONLY on mobile screens */
+@media (min-width: 769px) {
+    .swipe-hint {
+        display: none !important;
     }
 }
 
