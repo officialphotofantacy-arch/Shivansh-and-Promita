@@ -165,7 +165,7 @@ body {
 /* Flap Cover Text Styling */
 .flap-text {
     position: absolute;
-    top: -110px; /* Positions text vertically within top triangle flap */
+    top: -120px; /* Positions text vertically within top triangle flap */
     width: 200px;
     left: -100px;
     text-align: center;
