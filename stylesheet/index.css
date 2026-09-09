@@ -158,6 +158,23 @@ body {
     transform-origin: top;
     transition: transform 0.6s ease;
     z-index: 4;
+    display: flex;
+    justify-content: center;
+}
+
+/* Flap Cover Text Styling */
+.flap-text {
+    position: absolute;
+    top: -110px; /* Positions text vertically within top triangle flap */
+    width: 200px;
+    left: -100px;
+    text-align: center;
+    font-family: 'Alex Brush', cursive;
+    font-size: 26px;
+    color: #5c4d3c;
+    letter-spacing: 1px;
+    pointer-events: none;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .envelope:hover .flap {
