@@ -1,0 +1,39 @@
+name: Obfuscate and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      # Obfuscate JavaScript files in the website directory
+      - name: Obfuscate JavaScript
+        uses: javascript-obfuscator/github-action-javascript-obfuscator@v1.1.0
+        with:
+          input_path: './js'
+          output_path: './dist/js'
+          compact: true
+          control_flow_flattening: true
+
+      # Copy static assets (HTML/CSS) to output folder
+      - name: Copy Static Files
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp -r css dist/ 2>/dev/null || true
+
+      # Deploy obfuscated folder to GitHub Pages branch
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
